@@ -1,0 +1,64 @@
+#include <graphics.h>
+#include <conio.h>
+#include <math.h>
+#include <dos.h>
+
+#define PI 3.14159265
+
+void rotateX(float *y, float *z, float angle) {
+    float rad = angle * PI / 180;
+    float cosa = cos(rad);
+    float sina = sin(rad);
+    float y1 = *y * cosa - *z * sina;
+    float z1 = *y * sina + *z * cosa;
+    *y = y1;
+    *z = z1;
+}
+
+void rotateY(float *x, float *z, float angle) {
+    float rad = angle * PI / 180;
+    float cosa = cos(rad);
+    float sina = sin(rad);
+    float x1 = *x * cosa + *z * sina;
+    float z1 = -*x * sina + *z * cosa;
+    *x = x1;
+    *z = z1;
+}
+
+void drawCube(float cube[8][3]) {
+    int i;
+    for (i = 0; i < 4; i++) {
+        line(cube[i][0], cube[i][1], cube[(i+1)%4][0], cube[(i+1)%4][1]);
+        line(cube[i+4][0], cube[i+4][1], cube[(i+1)%4+4][0], cube[(i+1)%4+4][1]);
+        line(cube[i][0], cube[i][1], cube[i+4][0], cube[i+4][1]);
+    }
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "");
+
+    float cube[8][3] = {
+        {100,100,100}, {200,100,100}, {200,200,100}, {100,200,100},
+        {100,100,200}, {200,100,200}, {200,200,200}, {100,200,200}
+    };
+
+    while (!kbhit()) {
+        cleardevice();
+        float temp[8][3];
+        for (int i=0;i<8;i++){
+            temp[i][0] = cube[i][0];
+            temp[i][1] = cube[i][1];
+            temp[i][2] = cube[i][2];
+            rotateX(&temp[i][1], &temp[i][2], 2);
+            rotateY(&temp[i][0], &temp[i][2], 3);
+        }
+        drawCube(temp);
+        delay(100);
+    }
+
+    getch();
+    closegraph();
+    return 0;
+}
+
